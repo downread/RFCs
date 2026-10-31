@@ -1,4 +1,4 @@
-# RFC: An HTML Subset for Feed Content
+# RFC: Feed HTML - An HTML Subset for Feed Content
 
 Oct 30, 2026 · @Tim Jansen
 
