@@ -1,6 +1,6 @@
 # RFC: Feed HTML - An HTML Subset for Feed Content
 
-Oct 30, 2026 · @Tim Jansen
+Oct 31, 2026 · @Tim Jansen
 
 Latest version on GitHub: [Downread-RFC-2-HTML-Subset-for-Feed-Content.md](https://github.com/downread/RFCs/blob/main/Downread-RFC-2-HTML-Subset-for-Feed-Content.md) · [Change history](https://github.com/downread/RFCs/commits/main/Downread-RFC-2-HTML-Subset-for-Feed-Content.md)
 
