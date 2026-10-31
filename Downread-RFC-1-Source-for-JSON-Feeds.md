@@ -2,6 +2,8 @@
 
 Oct 29, 2026 · @Tim Jansen
 
+Latest version on GitHub: [Downread-RFC-1-Source-for-JSON-Feeds.md](https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md) · [Change history](https://github.com/downread/RFCs/commits/main/Downread-RFC-1-Source-for-JSON-Feeds.md)
+
 ## Summary
 
 This proposal adds five fields from the RSS [source namespace](https://source.scripting.com/) to JSON Feed: who a post replies to, where its comments are, how many comments it has, the author's accounts on other services, and, for comments, the text as Markdown. They live in one extension object, `_source`, so a reader can treat a JSON feed exactly like an RSS feed that uses the namespace.
@@ -16,12 +18,12 @@ Everything goes into one object named `_source`, following JSON Feed's [extensio
 
 ```json
 "_source": {
-  "about": "http://source.scripting.com/"
+  "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md"
 }
 ```
 
 - It may appear on an **item** (`inReplyTo`, `comments`, and in comment feeds `markdown`) and on the **feed** itself (`accounts`).
-- `about` should be `http://source.scripting.com/`, the namespace URI the RSS elements use. Readers should not reject `https://` or a missing trailing slash.
+- `about` should be `https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md`, this document. **This is not its final location**: the URL will change once the spec has a permanent home. Readers must therefore **ignore the value of `about`**: they recognize the extension by the name `_source` alone, and read its fields whatever `about` says, or when it is missing.
 - Every field is optional. A reader ignores fields it doesn't know and values of the wrong type, so the object can grow later.
 
 ## Item: `inReplyTo`
@@ -30,7 +32,7 @@ Everything goes into one object named `_source`, following JSON Feed's [extensio
 
 ```json
 "_source": {
-  "about": "http://source.scripting.com/",
+  "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
   "inReplyTo": "https://rss.chat/?id=204"
 }
 ```
@@ -55,7 +57,7 @@ Readers show it as "In reply to …": a link for a permalink, plain text for an 
 
 ```json
 "_source": {
-  "about": "http://source.scripting.com/",
+  "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
   "comments": {
     "feedUrl": "https://rss.chat/users/dave/comments/205.xml",
     "count": 2,
@@ -80,7 +82,7 @@ Replies are posts too, so an item in a comment feed carries its own `comments` f
   "date_published": "2026-07-08T14:42:55Z",
   "content_html": "<p>hey manton, great to see you here.</p><p>this is the <strong>web</strong> btw.</p>",
   "_source": {
-    "about": "http://source.scripting.com/",
+    "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
     "markdown": "hey manton, great to see you here.\n\nthis is the **web** btw."
   }
 }
@@ -99,7 +101,7 @@ Replies are posts too, so an item in a comment feed carries its own `comments` f
   "version": "https://jsonfeed.org/version/1.1",
   "title": "Example Blog",
   "_source": {
-    "about": "http://source.scripting.com/",
+    "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
     "accounts": [
       { "service": "socialspec", "name": "@example.com" },
       { "service": "mastodon", "name": "@alice@mastodon.social" }
@@ -155,7 +157,7 @@ When a feed carries both the source elements and an older form, the source eleme
   "home_page_url": "https://example.com/",
   "feed_url": "https://example.com/feed.json",
   "_source": {
-    "about": "http://source.scripting.com/",
+    "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
     "accounts": [{ "service": "socialspec", "name": "@example.com" }]
   },
   "items": [
@@ -165,7 +167,7 @@ When a feed carries both the source elements and an older form, the source eleme
       "content_html": "<p>I disagree, and here is why…</p>",
       "date_published": "2026-10-29T09:00:00Z",
       "_source": {
-        "about": "http://source.scripting.com/",
+        "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
         "inReplyTo": "https://rss.chat/?id=204",
         "comments": {
           "feedUrl": "https://example.com/posts/42/comments.json",
@@ -182,4 +184,4 @@ When a feed carries both the source elements and an older form, the source eleme
 
 - **A `total` attribute for RSS.** The same gap exists in `<source:comments>`. Proposal: an optional `total` attribute, `<source:comments count="2" total="31" feedUrl="…"/>`, so rss.chat can show thread size. This needs the namespace's maintainers to agree.
 - **Field names.** `total` mirrors Atom's `thr:total`; `totalCount` would be more explicit. Pick one before anyone ships it.
-- **Where `about` points.** Should it name the RSS namespace, as now, or a page for this JSON mapping?
+- **Where `about` points.** It names this document at a temporary location. Where should the permanent home be, and should it instead name the RSS namespace (`http://source.scripting.com/`)? Either way readers ignore the value, so changing it breaks nothing.
