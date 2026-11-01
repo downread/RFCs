@@ -43,7 +43,24 @@ When the target has no URL (a Bluesky post, say), use an object with the id and 
 "inReplyTo": { "value": "at://did:plc:xyz/app.bsky.feed.post/3k2", "isPermaLink": false }
 ```
 
-Readers show it as "In reply to …": a link for a permalink, plain text for an id. A post replies to one item; for several, pick the main one.
+To also name the feed the replied-to post comes from, use the object form with `feedUrl` and `feedTitle`, like the attributes of the same names on `<source:inReplyTo>`:
+
+```json
+"inReplyTo": {
+  "value": "https://demo.rss.chat/?id=798",
+  "feedUrl": "https://demo.rss.chat/users/dave/rss.xml",
+  "feedTitle": "Dave Winer"
+}
+```
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `value` | string | **Required.** The permalink of the post replied to, or its id when `isPermaLink` is `false`. |
+| `isPermaLink` | boolean | `false` when `value` is an id, not a URL. Defaults to `true`, so it can be omitted for permalinks. |
+| `feedUrl` | URL | The feed containing the post replied to. Omitted when unknown. Same as `source:inReplyTo@feedUrl`. |
+| `feedTitle` | string | The title of that feed. Omitted when the feed has none. Same as `source:inReplyTo@feedTitle`. |
+
+Readers show it as "In reply to …": a link for a permalink, plain text for an id. When `feedTitle` is given, they show it as the link text instead of the URL, so "In reply to Dave Winer" still links to the post. A post replies to one item; for several, pick the main one.
 
 ## Item: `comments`
 
@@ -124,6 +141,8 @@ Each field has an RSS counterpart, so a publisher can write both formats from th
 | --- | --- | --- | --- |
 | `inReplyTo` (string) | `<source:inReplyTo>` | — | `<thr:in-reply-to href>` |
 | `inReplyTo` (object, `isPermaLink: false`) | `<source:inReplyTo isPermaLink="false">` | — | `<thr:in-reply-to ref>` without `href` |
+| `inReplyTo.feedUrl` | `<source:inReplyTo feedUrl>` | — | `source` on `<thr:in-reply-to>` |
+| `inReplyTo.feedTitle` | `<source:inReplyTo feedTitle>` | — | — |
 | `comments.feedUrl` | `<source:comments feedUrl>` | `<wfw:commentRss>` | `<link rel="replies" type="application/atom+xml">` |
 | `comments.count` | `<source:comments count>` | `<slash:comments>` | `thr:count` on that `replies` link |
 | `comments.total` | none yet (see open questions) | — | `<thr:total>` |
@@ -145,6 +164,7 @@ When a feed carries both the source elements and an older form, the source eleme
 **Readers**
 
 - Feeds are untrusted: drop URLs that are not `http(s)`, counts that are not non-negative integers, and `total` values below `count`.
+- An invalid `inReplyTo.feedUrl` or an empty `feedTitle` is dropped on its own; the reply itself stays.
 - If `count` promises comments but `feedUrl` returns an empty feed or an error, say so instead of showing "no comments".
 - Comment feeds often live on other sites and send no CORS headers, so browser-based readers need a fallback (a proxy).
 
@@ -168,7 +188,11 @@ When a feed carries both the source elements and an older form, the source eleme
       "date_published": "2026-10-29T09:00:00Z",
       "_source": {
         "about": "https://github.com/downread/RFCs/blob/main/Downread-RFC-1-Source-for-JSON-Feeds.md",
-        "inReplyTo": "https://rss.chat/?id=204",
+        "inReplyTo": {
+          "value": "https://rss.chat/?id=204",
+          "feedUrl": "https://rss.chat/users/dave/rss.xml",
+          "feedTitle": "Dave Winer"
+        },
         "comments": {
           "feedUrl": "https://example.com/posts/42/comments.json",
           "count": 3,
